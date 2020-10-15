@@ -6,11 +6,18 @@ namespace BRO_FTP_tests
     {
 
         [Test]
-        public void ConnectionTest()
+        public void ConnectionTestSuccess()
+        {
+            
+        }
+
+
+        [Test]
+        public void ConnectionTestFail()
         {
 
         }
-       
+
         [Test]
         public void SenderTest()
         {
@@ -24,9 +31,23 @@ namespace BRO_FTP_tests
         }
 
         [Test]
-        public void FileListingTest()
+        public void FileIntegrityCheck()
+        {
+            //Checking to make sure the file sent is the same as the file received
+        }
+
+        [Test]
+        public void FileListingTestSuccess()
         {
 
         }
+
+
+        [Test]
+        public void FileListingTestFail()
+        {
+
+        }
+
     }
 }
