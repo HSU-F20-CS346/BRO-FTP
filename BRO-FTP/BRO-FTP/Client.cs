@@ -8,16 +8,18 @@ using System.Threading;
 namespace BRO_FTP
 {    class Listener
     {
-        static void Connect(String server, String message)
+        // Pings an IP and port trying to connect
+        static void Connect(String IPAddress, String portNum) 
         {
             while (true)
             {
                 try
                 {
-                    // Create a TcpClient.
+                    
+                    // sets port num and IPAddress
+                    int port = Int32.Parse(portNum);
+                    TcpClient client = new TcpClient(IPAddress, port);
 
-                    int port = Int32.Parse(message);
-                    TcpClient client = new TcpClient(server, port);
 
                     if (client.Connected)
                     {
@@ -42,29 +44,32 @@ namespace BRO_FTP
         public static void Main()
         {
 
-            // Thread for client connection
+            // Starts connection thread
             Thread thread = new Thread(() =>
             {
                 Thread.Sleep(5000);
-                Connect("127.0.0.1", "13000");
+                Connect("192.168.1.108", "13000");
             });
             thread.Start();
 
 
+            
             TcpListener server = null;
+
+            // creates a TCP listener on local IP and waiting for a connection to be made
             try
             {
-                // Set the TcpListener on port 13001.
-                int port = 13001;
-                IPAddress localAddr = IPAddress.Parse("127.0.0.1");
+                // Local IP and port to listen on
+                int port = 13000;
+                IPAddress localAddr = IPAddress.Parse("192.168.1.100");
 
-                // TcpListener server = new TcpListener(port);
+                // new TCP listener creation
                 server = new TcpListener(localAddr, port);
 
-                // Start listening for client requests.
+                // Start listening for connections
                 server.Start();
 
-                // Enter the listening loop.
+                // Enter the listening loop waiting for connection
                 while (true)
                 {
                     Console.Write("Waiting for a connection... ");
