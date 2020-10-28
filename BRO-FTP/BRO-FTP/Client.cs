@@ -18,7 +18,9 @@ namespace BRO_FTP
             {
                 // Local IP and port to listen on
                 int port = 4000;
-                IPAddress localAddr = IPAddress.Parse("local ip"); //Needs your IP to function
+                //IPAddress localAddr = IPAddress.Parse("127.0.0.2"); //Needs your IP to function
+                IPAddress[] localAddresses = Dns.GetHostAddresses(Dns.GetHostName());
+                IPAddress localAddr = localAddresses[4]; //Needs your IP to function
 
                 // new TCP listener creation
                 server = new TcpListener(localAddr, port);
@@ -29,7 +31,7 @@ namespace BRO_FTP
                 // Enter the listening loop waiting for connection
                 while (true)
                 {
-                    Console.Write("Waiting for a connection... ");
+                    //Console.Write("Waiting for a connection... ");
 
                     // look for client to accept
                     TcpClient client = server.AcceptTcpClient();
@@ -61,7 +63,6 @@ namespace BRO_FTP
             {
                 try
                 {
-                    
                     // sets port num and IPAddress
                     int port = Int32.Parse(portNum);
                     TcpClient client = new TcpClient(IPAddress, port);
@@ -89,19 +90,28 @@ namespace BRO_FTP
 
         public static void Main()
         {
-
+            
             // Starts connection thread
             Thread thread = new Thread(() =>
             {
-                Thread.Sleep(5000);
+                //Thread.Sleep(1000);
                 TCPListener();
+                //Thread.Sleep(3000);
             });
-            thread.Start();
 
-            Connect("Target IP", "4000"); // Needs target IP to function
-          
+            thread.Start();
             
-           
+            Console.Write("Enter the IP address: ");
+            string ipadd = Console.ReadLine();
+            Connect(ipadd, "4000"); // Needs target IP to function
+          
+            //Thread reqHandler = new Thread(() =>
+            //{
+            //    while (running)
+            //    {
+            //        BinaryReader 
+            //    }
+            //}
         }
     }
 }
