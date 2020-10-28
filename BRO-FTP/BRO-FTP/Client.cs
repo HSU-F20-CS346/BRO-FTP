@@ -20,7 +20,7 @@ namespace BRO_FTP
                 int port = 4000;
                 //IPAddress localAddr = IPAddress.Parse("127.0.0.2"); //Needs your IP to function
                 IPAddress[] localAddresses = Dns.GetHostAddresses(Dns.GetHostName());
-                IPAddress localAddr = localAddresses[4]; //Needs your IP to function
+                IPAddress localAddr = localAddresses[localAddresses.Length-1]; //Needs your IP to function
 
                 // new TCP listener creation
                 server = new TcpListener(localAddr, port);
