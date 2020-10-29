@@ -2,8 +2,10 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
+using System.Transactions;
 
 namespace BRO_FTP
 {    class Listener
@@ -29,20 +31,18 @@ namespace BRO_FTP
                 server.Start();
 
                 // Enter the listening loop waiting for connection
-                while (true)
-                {
+
                     //Console.Write("Waiting for a connection... ");
 
                     // look for client to accept
                     TcpClient client = server.AcceptTcpClient();
 
-                    if (client.Connected)
-                    {
-                        Console.WriteLine("Connection from secondary!");
-                        break;
-                    }
-
+                if(client.Connected)
+                {
+                    //return client;
+                    Rec.recFile(client);
                 }
+
             }
             catch (SocketException e)
             {
@@ -57,34 +57,33 @@ namespace BRO_FTP
         }
 
         // Pings an IP and port trying to connect
-        static void Connect(String IPAddress, String portNum) 
+        static TcpClient Connect(String IPAddress, String portNum) 
         {
-            while (true)
-            {
+           //while (true)
+            //{
                 try
                 {
                     // sets port num and IPAddress
                     int port = Int32.Parse(portNum);
                     TcpClient client = new TcpClient(IPAddress, port);
 
-
-                    if (client.Connected)
-                    {
-                        Console.WriteLine("Connected to secondary");
-                        break;
-                    }
+                    return client;
+        
                 }
                 catch (ArgumentNullException)
                 {
+                   
                     Console.WriteLine("No connection");
                     Thread.Sleep(5000);
+                    throw new Exception();
                 }
                 catch (SocketException)
                 {
                     Console.WriteLine("No connection");
                     Thread.Sleep(5000);
+                    throw new Exception();  
                 }
-            }
+            //}
         }
 
 
@@ -103,7 +102,27 @@ namespace BRO_FTP
             
             Console.Write("Enter the IP address: ");
             string ipadd = Console.ReadLine();
-            Connect(ipadd, "4000"); // Needs target IP to function
+            TcpClient client;
+            
+            client = Connect(ipadd, "4000"); // Needs target IP to function
+            BufferedStream stream = new BufferedStream(client.GetStream());
+            BinaryWriter writer = new BinaryWriter(stream);
+
+            bool running = true;
+
+            while(running)
+            {
+                Console.Write("Enter Command: ");
+                string[] command = Console.ReadLine().Split(' ');
+                switch (command[0].ToLower())
+                {
+                    case "get":
+                        Req.reqFile(command[1]);
+                        break;
+                    case "send":
+                        Send.sendFile(command[1]);
+                }
+            }
           
             //Thread reqHandler = new Thread(() =>
             //{
