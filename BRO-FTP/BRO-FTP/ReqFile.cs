@@ -11,7 +11,7 @@ namespace BRO_FTP
 {
     class Req
     {
-        public static void reqFile(string file, BinaryWriter writer)
+        public static void getFile(string file, BinaryWriter writer)
         {
             byte[] package = new byte[0];
             byte[] payloadInfoBytes = new byte[0];

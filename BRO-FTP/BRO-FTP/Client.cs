@@ -117,7 +117,7 @@ namespace BRO_FTP
                 switch (command[0].ToLower())
                 {
                     case "get":
-                        Req.reqFile(command[1], writer);
+                        Req.getFile(command[1], writer);
                         break;
                     case "send":
                         Send.sendFile(command[1], writer);
