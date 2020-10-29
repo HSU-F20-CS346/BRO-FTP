@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 
 
@@ -26,8 +27,12 @@ namespace BRO_FTP
                 writer.Write(IPAddress.HostToNetworkOrder(payloadInfoBytes.Length));
                 writer.Write(payloadInfoBytes);
 
+                writer.Flush();
+
                 writer.Write(IPAddress.HostToNetworkOrder(package.Length));
                 writer.Write(package);
+
+                writer.Flush();
             }
             catch (Exception ex)
             {
@@ -35,12 +40,15 @@ namespace BRO_FTP
                 throw ex;
             }
         }
-        public static void listReq(BinaryWriter writer)
+        public static void listReq(TcpClient client)
         {
             byte[] package = new byte[0];
             byte[] payloadInfoBytes = new byte[0];
             try
             {
+                BufferedStream stream = new BufferedStream(client.GetStream());
+                BinaryWriter writer = new BinaryWriter(stream);
+                BinaryReader reader = new BinaryReader(stream);
                 //string extension = Path.GetExtension(file);
                 string payloadInfo = "3";
 
@@ -48,6 +56,15 @@ namespace BRO_FTP
 
                 writer.Write(IPAddress.HostToNetworkOrder(payloadInfoBytes.Length));
                 writer.Write(payloadInfoBytes);
+
+                writer.Flush();
+
+                int resLength = IPAddress.NetworkToHostOrder(reader.ReadInt32());
+                byte[] response = reader.ReadBytes(resLength);
+
+                string toWrite = Encoding.UTF8.GetString(response);
+                Console.WriteLine(toWrite);
+
             }
             catch (Exception ex)
             {

@@ -112,15 +112,22 @@ namespace BRO_FTP
 
             while(running)
             {
-                Console.Write("Enter Command: ");
+                Console.Write("Commands: get, send, list, quit\nEnter Command: ");
                 string[] command = Console.ReadLine().Split(' ');
                 switch (command[0].ToLower())
                 {
                     case "get":
-                        Req.reqFile(command[1]);
+                        Req.reqFile(command[1], writer);
                         break;
                     case "send":
-                        Send.sendFile(command[1]);
+                        Send.sendFile(command[1], writer);
+                        break;
+                    case "list":
+                        Req.listReq(client);
+                        break;
+                    case "quit":
+                        running = false;
+                        break;
                 }
             }
           

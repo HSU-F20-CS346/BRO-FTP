@@ -14,71 +14,6 @@ namespace BRO_FTP
     class Rec
     {
         public static void recFile(TcpClient client)
-        {           
-            BufferedStream stream;
-            BinaryReader reader;
-            BinaryWriter writer;
-
-            byte[] package = new byte[0];
-            byte[] payloadInfoBytes = new byte[0];
-
-            try
-            {   
-                stream = new BufferedStream(client.GetStream());
-                reader = new BinaryReader(stream);
-                writer = new BinaryWriter(stream);
-
-                ////string extension = Path.GetExtension(file);
-                //string payloadInfo = "1 " + file.Length + ' ' + file + " 0 ";
-
-                //payloadInfoBytes = Encoding.UTF8.GetBytes(payloadInfo);
-
-                //package = File.ReadAllBytes(file);
-
-                //send.Write(IPAddress.HostToNetworkOrder(payloadInfoBytes.Length));
-                //send.Write(payloadInfoBytes);
-
-                //send.Write(IPAddress.HostToNetworkOrder(package.Length));
-                //send.Write(package);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("error: {0}", ex.Message);
-                throw ex;
-            }
-
-
-            while(true)
-            {
-                int infoLength = IPAddress.NetworkToHostOrder(reader.ReadInt32());
-                byte[] infoBytes = reader.ReadBytes(infoLength);
-                string[] payloadInfo = Encoding.UTF8.GetString(infoBytes).Split(' ');
-
-
-                switch (payloadInfo[0])
-                {
-                    case "1":
-                        int payloadLength = IPAddress.NetworkToHostOrder(reader.ReadInt32());
-                        byte[] payloadBytes = reader.ReadBytes(payloadLength);
-                        File.WriteAllBytes(Path.Join(Directory.GetCurrentDirectory(), payloadInfo[2]), payloadBytes);
-                        break;
-                    case "2":
-                        Send.sendFile(payloadInfo[2], writer);
-                        break;
-                    case "3":
-                        Req.listRes(writer);
-                        break;
-                    case "4":
-                        Console.Write(All of the items listed in payload)
-                }
-                   
-
-                //ProcessReq(payloadInfo);
-
-
-            }
-        }
-        public static void listRes(TcpClient client)
         {
             BufferedStream stream;
             BinaryReader reader;
@@ -120,28 +55,66 @@ namespace BRO_FTP
                 string[] payloadInfo = Encoding.UTF8.GetString(infoBytes).Split(' ');
 
 
+                switch (payloadInfo[0])
+                {
+                    case "1":
+                        int payloadLength = IPAddress.NetworkToHostOrder(reader.ReadInt32());
+                        byte[] payloadBytes = reader.ReadBytes(payloadLength);
+                        File.WriteAllBytes(Path.Join(Directory.GetCurrentDirectory(), payloadInfo[2]), payloadBytes);
+                        break;
+                    case "2":
+                        Send.sendFile(payloadInfo[2], writer);
+                        break;
+                    case "3":
+                        Rec.listRes(client);
+                        break;
 
-                /*
-                 byte[] FileConstructer(string file)
-                 {
-                     byte[] package = new byte[0];
-                     byte[] payload = new byte[0];
-                     try 
-                     {
-                         string payloadInfo = "1 " + file.Length + ' ' + file + " 0 ";
+                }
 
-                         payload = Encoding.UTF8.GetBytes(payloadInfo);
 
-                         package = File.ReadAllBytes(file);
+                //ProcessReq(payloadInfo);
 
-                         package.CopyTo(payload, payload.Length);
-                         return package;
-                     }
-                     catch(Exception ex)
-                     {
-                         throw new Exception(ex.Message);
-                     }
-                */
 
             }
+        }
+        public static void listRes(TcpClient client)
+        {
+            BufferedStream stream;
+            BinaryWriter writer;
+
+            byte[] package = new byte[0];
+            byte[] payloadInfoBytes = new byte[0];
+
+            try
+            {
+                stream = new BufferedStream(client.GetStream());
+                writer = new BinaryWriter(stream);
+                System.IO.DriveInfo di = new System.IO.DriveInfo(@"C:\");
+                System.IO.DirectoryInfo dirInfo = di.RootDirectory;
+                System.IO.FileInfo[] fileNames = dirInfo.GetFiles("*.*");
+
+                string temp = fileNames[0].Name;
+                string payloadstr = "";
+                for (int i = 0; i < fileNames.Length; i++)
+                {
+                    payloadstr += fileNames[i].Name + "\n";
+                }
+
+                byte[] payload = Encoding.UTF8.GetBytes(payloadstr);
+                writer.Write(IPAddress.HostToNetworkOrder(payload.Length));
+                writer.Write(payload);
+
+                writer.Flush();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("error: {0}", ex.Message);
+                throw ex;
+            }
+
+        }
+
+    }        
+
+
 }
