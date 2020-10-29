@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 
@@ -89,15 +90,19 @@ namespace BRO_FTP
             {
                 stream = new BufferedStream(client.GetStream());
                 writer = new BinaryWriter(stream);
-                System.IO.DriveInfo di = new System.IO.DriveInfo(@"C:\");
-                System.IO.DirectoryInfo dirInfo = di.RootDirectory;
-                System.IO.FileInfo[] fileNames = dirInfo.GetFiles("*.*");
 
-                string temp = fileNames[0].Name;
+                string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "share_folder");
+                string[] files = Directory.GetFiles(path);
+                
+
+                //System.IO.DriveInfo di = new System.IO.DriveInfo(Directory.GetCurrentDirectory());
+                //System.IO.DirectoryInfo dirInfo = di.;
+                //System.IO.FileInfo[] fileNames = dirInfo.GetFiles("*.*");
+
                 string payloadstr = "";
-                for (int i = 0; i < fileNames.Length; i++)
+                for (int i = 0; i < files.Length; i++)
                 {
-                    payloadstr += fileNames[i].Name + "\n";
+                    payloadstr += Path.GetFileName(files[i]) + "\n";
                 }
 
                 byte[] payload = Encoding.UTF8.GetBytes(payloadstr);
